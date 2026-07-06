@@ -24,7 +24,13 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 	
 	fmt.Println("Server running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	
+	port := os.Getenv("PORT")
+	if port == "" {
+	port = "8080"
+	}
+
+log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func checkHandler(w http.ResponseWriter, r *http.Request) {
