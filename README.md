@@ -1,4 +1,5 @@
 # 📧 DNS Email Checker (Go + Web UI)
+deployed URL : https://dns-email-checker.onrender.com
 
 A simple and fast web application built in Go that checks a domain’s email DNS configuration:
 
