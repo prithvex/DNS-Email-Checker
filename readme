@@ -1,0 +1,99 @@
+📧 DNS Email Checker (Go + Web UI)
+
+A simple and fast web application built in Go that checks a domain’s email DNS configuration:
+
+MX records (mail servers)
+SPF record (email sender policy)
+DMARC record (email authentication policy)
+
+Includes a modern frontend UI built with HTML, CSS, and JavaScript.
+
+🚀 Features
+🔍 Check any domain instantly
+📬 Detect MX records
+🛡️ Validate SPF record
+🔐 Validate DMARC record
+🌐 Simple web UI
+⚡ Fast Go backend (net package)
+📊 Clean JSON API response
+🧠 How it works
+
+The backend uses Go’s built-in DNS resolver:
+
+net.LookupMX() → checks mail servers
+net.LookupTXT() → checks SPF & DMARC records
+
+Frontend sends a request:
+
+GET /check?domain=example.com
+
+Backend returns:
+
+{
+  "domain": "example.com",
+  "hasMx": true,
+  "hasSPF": true,
+  "spfRecord": "v=spf1 include:_spf.google.com ~all",
+  "hasDMARC": true,
+  "dmarcRecord": "v=DMARC1; p=reject"
+}
+🖥️ Project Structure
+dns-email-checker/
+│
+├── main.go
+└── static/
+    └── index.html
+⚙️ Installation & Setup
+1. Clone the repository
+git clone https://github.com/your-username/dns-email-checker.git
+cd dns-email-checker
+2. Run the server
+go run main.go
+3. Open in browser
+http://localhost:8080
+🌐 API Endpoint
+Check domain
+GET /check?domain=example.com
+Response
+{
+  "domain": "example.com",
+  "hasMx": true,
+  "hasSPF": true,
+  "spfRecord": "...",
+  "hasDMARC": true,
+  "dmarcRecord": "..."
+}
+🛠️ Tech Stack
+Go (Golang)
+net/http (backend server)
+net (DNS lookup)
+HTML + CSS + JavaScript (frontend)
+📸 UI Preview
+
+Simple modern glass UI with domain checker input and live results.
+
+💡 Use Cases
+Email deliverability checks
+Domain DNS validation
+Security auditing (SPF/DMARC setup)
+Learning Go networking & web development
+🚀 Future Improvements
+Domain history tracking
+Email deliverability score (0–100)
+Bulk domain checking (CSV upload)
+API rate limiting
+Deployment on cloud (Render / Railway)
+React frontend version
+📦 Run Example
+Server running on :8080
+
+Then open:
+
+http://localhost:8080
+📄 License
+
+MIT License — free to use and modify.
+
+👨‍💻 Author
+
+Built while learning Go networking + web backend development.

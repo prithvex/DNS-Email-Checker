@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DNS Email Checker</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Background */
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+}
+
+header h2 {
+    font-size: 18px;
+}
+
+nav a {
+    color: #cbd5e1;
+    margin-left: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+nav a:hover {
+    color: #60a5fa;
+}
+
+/* Center wrapper */
+.wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Card */
+.card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    border-radius: 16px;
+    width: 420px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.4);
+}
+
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+.loader {
+    display: none;
+    text-align: center;
+    margin: 10px 0;
+    font-size: 13px;
+    color: #93c5fd;
+}
+
+.result {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin: 6px 0;
+    padding: 6px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+}
+
+.ok { color: #22c55e; font-weight: bold; }
+.bad { color: #ef4444; font-weight: bold; }
+
+.record {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #cbd5e1;
+    word-break: break-word;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 12px;
+    color: #94a3b8;
+    background: rgba(255,255,255,0.04);
+}
+
+/* Meme Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 600px;
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 12px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>⚡ DNS Checker Pro</h2>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Docs</a>
+        <a href="#">API</a>
+        <a href="#">About</a>
+    </nav>
+</header>
+
+<div class="wrapper">
+    <div class="card">
+        <h1>DNS Email Checker</h1>
+
+        <input id="domain" placeholder="Enter domain (e.g. google.com)" />
+        <button onclick="check()">Check Domain</button>
+
+        <div class="loader" id="loader">Checking DNS records...</div>
+
+        <div class="result" id="result"></div>
+    </div>
+</div>
+
+<footer>
+    © 2026 DNS Checker Pro • Built for fast DNS insights
+</footer>
+
+<!-- Meme Modal -->
+<div class="modal" id="memeModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeMeme()">✖</span>
+
+        <img 
+            src="https://pbs.twimg.com/media/E6GkGwsXsAYnU96.jpg" 
+            alt="meme"
+            style="width:100%; border-radius:10px;"
+        />
+
+        <p style="text-align:center; margin-top:10px; color:#cbd5e1;">
+            You clicked a useless link 😄
+        </p>
+    </div>
+</div>
+
+<script>
+async function check() {
+    const input = document.getElementById("domain");
+    const domain = input.value.trim();
+    const result = document.getElementById("result");
+    const loader = document.getElementById("loader");
+
+    if (!domain) return;
+
+    result.innerHTML = "";
+    loader.style.display = "block";
+
+    try {
+        const res = await fetch("/check?domain=" + domain);
+        if (!res.ok) throw new Error("Server error");
+
+        const data = await res.json();
+
+        result.innerHTML = `
+            <div class="row"><span>Domain</span><span>${data.domain}</span></div>
+            <div class="row"><span>MX Record</span><span class="${data.hasMx ? 'ok' : 'bad'}">${data.hasMx ? '✔' : '✖'}</span></div>
+            <div class="row"><span>SPF</span><span class="${data.hasSPF ? 'ok' : 'bad'}">${data.hasSPF ? '✔' : '✖'}</span></div>
+            <div class="row"><span>DMARC</span><span class="${data.hasDMARC ? 'ok' : 'bad'}">${data.hasDMARC ? '✔' : '✖'}</span></div>
+
+            <div class="record"><b>SPF:</b><br>${data.spfRecord || "Not found"}</div>
+            <div class="record"><b>DMARC:</b><br>${data.dmarcRecord || "Not found"}</div>
+        `;
+
+        input.value = "";
+
+    } catch (err) {
+        result.innerHTML = `<div class="bad">Error: ${err.message}</div>`;
+    } finally {
+        loader.style.display = "none";
+    }
+}
+
+/* Meme on any nav link click */
+document.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", function(e) {
+        e.preventDefault();
+        document.getElementById("memeModal").style.display = "flex";
+    });
+});
+
+function closeMeme() {
+    document.getElementById("memeModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>
